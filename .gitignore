@@ -1,0 +1,13 @@
+# Local Kubernetes configuration
+.kube/
+kubeconfig
+*.kubeconfig
+
+# Secrets
+*.secret.yaml
+*.secret.yml
+.env
+.env.*
+
+# Local tooling
+.terraform/
