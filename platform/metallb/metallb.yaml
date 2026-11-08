@@ -1,0 +1,17 @@
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: libvirt-pool
+  namespace: metallb-system
+spec:
+  addresses:
+  - 10.40.122.200-10.40.122.220 # Match your libvirt network subnet here
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: libvirt-adv
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+  - libvirt-pool
