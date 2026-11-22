@@ -1,0 +1,317 @@
+
+# apiVersion: argoproj.io/v1alpha1
+# kind: Application
+# metadata:
+#   name: opentelemetry-collector-gateway
+#   namespace: argocd
+# spec:
+#   project: default
+#   source:
+#     repoURL: https://github.com/Cliqeu-Lab/opentelemetry-helm-charts
+#     targetRevision: main
+#     path: charts/opentelemetry-collector
+#     helm:
+#       releaseName: opentelemetry-collector-gateway
+#       values: |
+#         image:
+#           repository: otel/opentelemetry-collector-k8s
+
+#         mode: deployment
+#         replicaCount: 3
+
+#         service:
+#           enabled: true
+
+#         ports:
+#           otlp:
+#             enabled: true
+#             hostPort: null
+#           otlp-http:
+#             enabled: true
+#             hostPort: null
+#           jaeger-compact:
+#             enabled: false
+#           jaeger-thrift:
+#             enabled: false
+#           jaeger-grpc:
+#             enabled: false
+#           zipkin:
+#             enabled: false
+
+#         config:
+#           receivers:
+#             otlp:
+#               protocols:
+#                 grpc:
+#                   endpoint: 0.0.0.0:4317
+#                 http:
+#                   endpoint: 0.0.0.0:4318
+
+#           exporters:
+#             debug:
+#               verbosity: basic
+
+#           service:
+#             pipelines:
+#               logs:
+#                 receivers: [otlp]
+#                 processors: [memory_limiter, batch]
+#                 exporters: [debug]
+#               metrics:
+#                 receivers: [otlp]
+#                 processors: [memory_limiter, batch]
+#                 exporters: [debug]
+#               traces:
+#                 receivers: [otlp]
+#                 processors: [memory_limiter, batch]
+#                 exporters: [debug]
+
+#   destination:
+#     server: https://kubernetes.default.svc
+#     namespace: opentelemetry-collector
+
+#   syncPolicy:
+#     automated:
+#       prune: true
+#       selfHeal: true
+#     syncOptions:
+#       - CreateNamespace=true
+#       - ServerSideApply=true
+# ---
+# apiVersion: argoproj.io/v1alpha1
+# kind: Application
+# metadata:
+#   name: opentelemetry-collector-agent
+#   namespace: argocd
+# spec:
+#   project: default
+#   source:
+#     repoURL: https://github.com/Cliqeu-Lab/opentelemetry-helm-charts
+#     targetRevision: main
+#     path: charts/opentelemetry-collector
+#     helm:
+#       releaseName: opentelemetry-collector-agent
+#       values: |
+#         image:
+#           repository: otel/opentelemetry-collector-k8s
+
+#         mode: daemonset
+
+#         ports:
+#           otlp:
+#             enabled: true
+#             hostPort: null
+#           otlp-http:
+#             enabled: true
+#             hostPort: null
+#           jaeger-compact:
+#             enabled: false
+#           jaeger-thrift:
+#             enabled: false
+#           jaeger-grpc:
+#             enabled: false
+#           zipkin:
+#             enabled: false
+
+#         config:
+#           receivers:
+#             otlp:
+#               protocols:
+#                 grpc:
+#                   endpoint: 0.0.0.0:4317
+#                 http:
+#                   endpoint: 0.0.0.0:4318
+
+#           exporters:
+#             otlp:
+#               endpoint: opentelemetry-collector-gateway.opentelemetry-collector.svc.cluster.local:4317
+#               tls:
+#                 insecure: true
+
+#           service:
+#             pipelines:
+#               logs:
+#                 receivers: [otlp]
+#                 processors: [memory_limiter, batch]
+#                 exporters: [otlp]
+#               metrics:
+#                 receivers: [otlp]
+#                 processors: [memory_limiter, batch]
+#                 exporters: [otlp]
+#               traces:
+#                 receivers: [otlp]
+#                 processors: [memory_limiter, batch]
+#                 exporters: [otlp]
+
+#   destination:
+#     server: https://kubernetes.default.svc
+#     namespace: opentelemetry-collector
+
+#   syncPolicy:
+#     automated:
+#       prune: true
+#       selfHeal: true
+#     syncOptions:
+#       - CreateNamespace=true
+#       - ServerSideApply=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: opentelemetry-demo
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Cliqeu-Lab/opentelemetry-helm-charts
+    targetRevision: main
+    path: charts/opentelemetry-demo
+    helm:
+      releaseName: opentelemetry-demo
+      values: |
+        opentelemetry-collector:
+          enabled: true
+          mode: daemonset
+          presets:
+            hostMetrics:
+              enabled: true
+            kubeletMetrics:
+              enabled: true
+            clusterMetrics:
+              enabled: true
+            kubernetesAttributes:
+              enabled: true
+            logsCollection:
+              enabled: true
+            kubernetesObjects:
+              enabled: true
+              watch: true
+              events:
+                enabled: true
+            annotationDiscovery:
+              metrics:
+                enabled: true
+
+        components:
+          # ad:
+          #   envOverrides:
+          #     - name: OTEL_EXPORTER_OTLP_PROTOCOL
+          #       value: http/protobuf
+          frontend:
+            envOverrides:
+              - name: PUBLIC_OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+                value: /otlp-http/v1/traces
+          frontend-proxy:
+            service:
+              type: LoadBalancer
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: opentelemetry-demo
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+# ---
+# apiVersion: argoproj.io/v1alpha1
+# kind: Application
+# metadata:
+#   name: opentelemetry-ebpf-instrumentation
+#   namespace: argocd
+# spec:
+#   project: default
+#   source:
+#     repoURL: https://github.com/Cliqeu-Lab/opentelemetry-helm-charts
+#     targetRevision: main
+#     path: charts/opentelemetry-ebpf-instrumentation
+#     helm:
+#       releaseName: opentelemetry-ebpf-instrumentation
+#   destination:
+#     server: https://kubernetes.default.svc
+#     namespace: opentelemetry-ebpf-instrumentation
+#   syncPolicy:
+#     automated:
+#       prune: true
+#       selfHeal: true
+#     syncOptions:
+#       - CreateNamespace=true
+#       - ServerSideApply=true
+# ---
+# apiVersion: argoproj.io/v1alpha1
+# kind: Application
+# metadata:
+#   name: opentelemetry-kube-stack
+#   namespace: argocd
+# spec:
+#   project: default
+#   source:
+#     repoURL: https://github.com/Cliqeu-Lab/opentelemetry-helm-charts
+#     targetRevision: main
+#     path: charts/opentelemetry-kube-stack
+#     helm:
+#       releaseName: opentelemetry-kube-stack
+#       values: |
+#         opentelemetry-operator:
+#           enabled: false
+#         crds:
+#           installOtel: false
+#   destination:
+#     server: https://kubernetes.default.svc
+#     namespace: opentelemetry-kube-stack
+#   syncPolicy:
+#     automated:
+#       prune: true
+#       selfHeal: true
+#     syncOptions:
+#       - CreateNamespace=true
+#       - ServerSideApply=true
+# ---
+# apiVersion: argoproj.io/v1alpha1
+# kind: Application
+# metadata:
+#   name: opentelemetry-operator
+#   namespace: argocd
+# spec:
+#   project: default
+#   source:
+#     repoURL: https://github.com/Cliqeu-Lab/opentelemetry-helm-charts
+#     targetRevision: main
+#     path: charts/opentelemetry-operator
+#     helm:
+#       releaseName: opentelemetry-operator
+#   destination:
+#     server: https://kubernetes.default.svc
+#     namespace: opentelemetry-operator
+#   syncPolicy:
+#     automated:
+#       prune: true
+#       selfHeal: true
+#     syncOptions:
+#       - CreateNamespace=true
+#       - ServerSideApply=true
+# ---
+# apiVersion: argoproj.io/v1alpha1
+# kind: Application
+# metadata:
+#   name: opentelemetry-target-allocator
+#   namespace: argocd
+# spec:
+#   project: default
+#   source:
+#     repoURL: https://github.com/Cliqeu-Lab/opentelemetry-helm-charts
+#     targetRevision: main
+#     path: charts/opentelemetry-target-allocator
+#     helm:
+#       releaseName: opentelemetry-target-allocator
+#   destination:
+#     server: https://kubernetes.default.svc
+#     namespace: opentelemetry-target-allocator
+#   syncPolicy:
+#     automated:
+#       prune: true
+#       selfHeal: true
+#     syncOptions:
+#       - CreateNamespace=true
+#       - ServerSideApply=true

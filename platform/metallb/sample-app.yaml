@@ -4,7 +4,6 @@ metadata:
   name: web-app
   labels:
     app.kubernetes.io/name: web-app
-  name: web-app
 spec:
   replicas: 1
   selector:
@@ -22,6 +21,13 @@ spec:
           - /bin/sh
           - -c
           - "echo 'welcome to my web app!' > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'"
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 250m
+            memory: 256Mi
       dnsConfig:
             options:
               - name: ndots
