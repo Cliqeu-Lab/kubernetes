@@ -1,0 +1,8 @@
+config:
+  server:
+    grpcReflection: true
+
+controller:
+  serviceAccount:
+    create: true
+    name: kagent-controller

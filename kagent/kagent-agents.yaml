@@ -1,0 +1,224 @@
+apiVersion: api.kagent.dev/v1alpha3
+kind: Harness
+metadata:
+  name: kagent-harness
+  namespace: kagent
+spec:
+  kagent: {}
+  workload:
+    image: ghcr.io/kagent-dev/kagent/golang-adk@sha256:f62e9f2820d3325ca147a5d39802dc3e9c914bee97b3e021bd38f6f5df10e3bf
+  substrate:
+    workerPoolRef:
+      name: kagent-default
+    snapshotPolicy:
+      location: s3://ate-snapshots/kagent/
+---
+apiVersion: api.kagent.dev/v1alpha3
+kind: AgentTemplate
+metadata:
+  name: k8s-agent-template
+  namespace: kagent
+spec:
+  description: Kubernetes cluster operations, troubleshooting, and resource management agent
+  modelConfig:
+    name: default-model-config
+  systemPrompt: |-
+    You are a Kubernetes operations expert. Use the kagent-tool-server tools to inspect
+    pods, deployments, services, events, logs, and cluster health, and help diagnose issues safely.
+  tools:
+    - mcp:
+        server:
+          kind: RemoteMCPServer
+          name: kagent-tool-server
+---
+apiVersion: api.kagent.dev/v1alpha3
+kind: Agent
+metadata:
+  name: k8s-agent
+  namespace: kagent
+spec:
+  template:
+    ref:
+      name: k8s-agent-template
+  harnessRef:
+    name: kagent-harness
+---
+apiVersion: api.kagent.dev/v1alpha3
+kind: AgentTemplate
+metadata:
+  name: helm-agent-template
+  namespace: kagent
+spec:
+  description: Helm chart release management, inspection, and troubleshooting agent
+  modelConfig:
+    name: default-model-config
+  systemPrompt: |-
+    You are a Helm package manager specialist. Use the kagent-tool-server Helm tools to
+    list releases, inspect chart values, check release history, and troubleshoot failed upgrades.
+  tools:
+    - mcp:
+        server:
+          kind: RemoteMCPServer
+          name: kagent-tool-server
+---
+apiVersion: api.kagent.dev/v1alpha3
+kind: Agent
+metadata:
+  name: helm-agent
+  namespace: kagent
+spec:
+  template:
+    ref:
+      name: helm-agent-template
+  harnessRef:
+    name: kagent-harness
+---
+apiVersion: api.kagent.dev/v1alpha3
+kind: AgentTemplate
+metadata:
+  name: argo-rollouts-agent-template
+  namespace: kagent
+spec:
+  description: Progressive delivery, canary, and blue-green rollout management agent
+  modelConfig:
+    name: default-model-config
+  systemPrompt: |-
+    You are an Argo Rollouts specialist. Use the kagent-tool-server Argo Rollouts tools to
+    inspect Rollout status, analysis runs, traffic weights, and promote or abort deployments.
+  tools:
+    - mcp:
+        server:
+          kind: RemoteMCPServer
+          name: kagent-tool-server
+---
+apiVersion: api.kagent.dev/v1alpha3
+kind: Agent
+metadata:
+  name: argo-rollouts-agent
+  namespace: kagent
+spec:
+  template:
+    ref:
+      name: argo-rollouts-agent-template
+  harnessRef:
+    name: kagent-harness
+---
+apiVersion: api.kagent.dev/v1alpha3
+kind: AgentTemplate
+metadata:
+  name: istio-agent-template
+  namespace: kagent
+spec:
+  description: Istio service mesh configuration, traffic routing, and proxy diagnostics agent
+  modelConfig:
+    name: default-model-config
+  systemPrompt: |-
+    You are an Istio service mesh specialist. Use the kagent-tool-server Istio tools to inspect
+    VirtualServices, DestinationRules, Gateways, Envoy proxy status, and mTLS policies.
+  tools:
+    - mcp:
+        server:
+          kind: RemoteMCPServer
+          name: kagent-tool-server
+---
+apiVersion: api.kagent.dev/v1alpha3
+kind: Agent
+metadata:
+  name: istio-agent
+  namespace: kagent
+spec:
+  template:
+    ref:
+      name: istio-agent-template
+  harnessRef:
+    name: kagent-harness
+---
+apiVersion: api.kagent.dev/v1alpha3
+kind: AgentTemplate
+metadata:
+  name: cilium-agent-template
+  namespace: kagent
+spec:
+  description: Cilium CNI connectivity debugging, cluster management, and network policy agent
+  modelConfig:
+    name: default-model-config
+  systemPrompt: |-
+    You are a Cilium networking and eBPF security specialist. Use the kagent-tool-server Cilium tools
+    to inspect Cilium endpoints, cluster connectivity, Hubble flows, and CiliumNetworkPolicies.
+  tools:
+    - mcp:
+        server:
+          kind: RemoteMCPServer
+          name: kagent-tool-server
+---
+apiVersion: api.kagent.dev/v1alpha3
+kind: Agent
+metadata:
+  name: cilium-agent
+  namespace: kagent
+spec:
+  template:
+    ref:
+      name: cilium-agent-template
+  harnessRef:
+    name: kagent-harness
+---
+apiVersion: api.kagent.dev/v1alpha3
+kind: AgentTemplate
+metadata:
+  name: kgateway-agent-template
+  namespace: kagent
+spec:
+  description: Kubernetes Gateway API and kgateway routing and policy diagnostics agent
+  modelConfig:
+    name: default-model-config
+  systemPrompt: |-
+    You are a Kubernetes Gateway API and kgateway specialist. Use the kagent-tool-server tools
+    to inspect Gateways, HTTPRoutes, GatewayClasses, and upstream traffic policies.
+  tools:
+    - mcp:
+        server:
+          kind: RemoteMCPServer
+          name: kagent-tool-server
+---
+apiVersion: api.kagent.dev/v1alpha3
+kind: Agent
+metadata:
+  name: kgateway-agent
+  namespace: kagent
+spec:
+  template:
+    ref:
+      name: kgateway-agent-template
+  harnessRef:
+    name: kagent-harness
+---
+apiVersion: api.kagent.dev/v1alpha3
+kind: AgentTemplate
+metadata:
+  name: observability-agent-template
+  namespace: kagent
+spec:
+  description: Cluster metrics, PromQL queries, and performance troubleshooting agent
+  modelConfig:
+    name: default-model-config
+  systemPrompt: |-
+    You are a Kubernetes observability and Prometheus specialist. Use the kagent-tool-server
+    Prometheus and cluster metrics tools to query metrics, analyze resource usage, and diagnose latency or errors.
+  tools:
+    - mcp:
+        server:
+          kind: RemoteMCPServer
+          name: kagent-tool-server
+---
+apiVersion: api.kagent.dev/v1alpha3
+kind: Agent
+metadata:
+  name: observability-agent
+  namespace: kagent
+spec:
+  template:
+    ref:
+      name: observability-agent-template
+  harnessRef:
+    name: kagent-harness

@@ -1,0 +1,130 @@
+
+# ============================================================
+# Gemini 3.x
+# ============================================================
+
+apiVersion: api.kagent.dev/v1alpha3
+kind: ModelConfig
+metadata:
+  name: gemini-38-flash
+  namespace: kagent
+spec:
+  apiKeySecret: kagent-gemini
+  apiKeySecretKey: GOOGLE_API_KEY
+  model: gemini-3.8-flash
+  provider: Gemini
+  gemini: {}
+---
+apiVersion: api.kagent.dev/v1alpha3
+kind: ModelConfig
+metadata:
+  name: gemini-36-flash
+  namespace: kagent
+spec:
+  apiKeySecret: kagent-gemini
+  apiKeySecretKey: GOOGLE_API_KEY
+  model: gemini-3.6-flash
+  provider: Gemini
+  gemini: {}
+---
+apiVersion: api.kagent.dev/v1alpha3
+kind: ModelConfig
+metadata:
+  name: gemini-3-flash
+  namespace: kagent
+spec:
+  apiKeySecret: kagent-gemini
+  apiKeySecretKey: GOOGLE_API_KEY
+  model: gemini-3-flash
+  provider: Gemini
+  gemini: {}
+
+# ============================================================
+# Gemini 2.5
+# ============================================================
+
+---
+apiVersion: api.kagent.dev/v1alpha3
+kind: ModelConfig
+metadata:
+  name: gemini-25-flash
+  namespace: kagent
+spec:
+  apiKeySecret: kagent-gemini
+  apiKeySecretKey: GOOGLE_API_KEY
+  model: gemini-2.5-flash
+  provider: Gemini
+  gemini: {}
+
+---
+apiVersion: api.kagent.dev/v1alpha3
+kind: ModelConfig
+metadata:
+  name: gemini-25-flash-lite
+  namespace: kagent
+spec:
+  apiKeySecret: kagent-gemini
+  apiKeySecretKey: GOOGLE_API_KEY
+  model: gemini-2.5-flash-lite
+  provider: Gemini
+  gemini: {}
+
+# ============================================================
+# Gemini Flash Lite
+# ============================================================
+
+---
+apiVersion: api.kagent.dev/v1alpha3
+kind: ModelConfig
+metadata:
+  name: gemini-35-flash-lite
+  namespace: kagent
+spec:
+  apiKeySecret: kagent-gemini
+  apiKeySecretKey: GOOGLE_API_KEY
+  model: gemini-3.5-flash-lite
+  provider: Gemini
+  gemini: {}
+
+---
+apiVersion: api.kagent.dev/v1alpha3
+kind: ModelConfig
+metadata:
+  name: gemini-31-flash-lite
+  namespace: kagent
+spec:
+  apiKeySecret: kagent-gemini
+  apiKeySecretKey: GOOGLE_API_KEY
+  model: gemini-3.1-flash-lite
+  provider: Gemini
+  gemini: {}
+
+# ============================================================
+# Gemma 4
+# ============================================================
+
+---
+apiVersion: api.kagent.dev/v1alpha3
+kind: ModelConfig
+metadata:
+  name: gemma-4-31b
+  namespace: kagent
+spec:
+  apiKeySecret: kagent-gemini
+  apiKeySecretKey: GOOGLE_API_KEY
+  model: gemma-4-31b-it
+  provider: Gemini
+  gemini: {}
+
+---
+apiVersion: api.kagent.dev/v1alpha3
+kind: ModelConfig
+metadata:
+  name: gemma-4-26b
+  namespace: kagent
+spec:
+  apiKeySecret: kagent-gemini
+  apiKeySecretKey: GOOGLE_API_KEY
+  model: gemma-4-26b-a4b-it
+  provider: Gemini
+  gemini: {}
